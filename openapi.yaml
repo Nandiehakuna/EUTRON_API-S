@@ -1,0 +1,868 @@
+openapi: 3.0.0
+info:
+  title: Eutron Technologies Limited
+  description: This API manages users, vendors, sessions, routers, and payments, providing endpoints for creation, retrieval, updates, and deletions.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  # User Routes
+  /auth/create:
+    post:
+      summary: Create a new user
+      tags:
+        - Users
+      description: Endpoint to create a new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Bad request
+
+  /auth/login:
+    post:
+      summary: Login a user
+      tags:
+        - Users
+      description: Endpoint for user login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUser'
+      responses:
+        '200':
+          description: User logged in successfully
+        '401':
+          description: Invalid credentials
+
+  /api/update:
+    put:
+      summary: Update user details
+      tags:
+        - Users
+      description: Endpoint to update user details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+      responses:
+        '200':
+          description: User updated successfully
+        '404':
+          description: User not found
+
+  /auth/api/users/listAll:
+    get:
+      summary: List all users
+      tags:
+        - Users
+      description: Fetch all users from the system.
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: No users found
+
+  # Vendor Routes
+  /api/vendor/create:
+    post:
+      summary: Create a vendor
+      tags:
+        - Vendors
+      description: Endpoint to create a new vendor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVendor'
+      responses:
+        '201':
+          description: Vendor created successfully
+        '400':
+          description: Bad request
+
+  /api/vendor/{vendorId}/delete:
+    delete:
+      summary: Delete a vendor
+      tags:
+        - Vendors
+      description: Endpoint to remove a vendor by ID.
+      parameters:
+        - name: vendorId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "vendor123"
+      responses:
+        '200':
+          description: Vendor deleted successfully
+        '404':
+          description: Vendor not found
+
+  /api/vendor/list:
+    get:
+      summary: Get all vendors
+      tags:
+        - Vendors
+      description: Endpoint to list all vendors.
+      responses:
+        '200':
+          description: A list of vendors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vendor'
+        '404':
+          description: No vendors found
+
+  /api/vendor/{vendorId}/find:
+    get:
+      summary: Get a vendor by ID
+      tags:
+        - Vendors
+      description: Endpoint to get a vendor by its ID.
+      parameters:
+        - name: vendorId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "vendor123"
+      responses:
+        '200':
+          description: Vendor found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '404':
+          description: Vendor not found
+
+  # Sessions Routes
+  /sessions/create:
+    post:
+      summary: Create a session
+      tags:
+        - Sessions
+      description: Endpoint to create a new session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSession'
+      responses:
+        '201':
+          description: Session created successfully
+        '400':
+          description: Bad request
+
+  /sessions/delete/{id}:
+    delete:
+      summary: Remove a session
+      tags:
+        - Sessions
+      description: Endpoint to remove a session by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "session123"
+      responses:
+        '200':
+          description: Session removed successfully
+        '404':
+          description: Session not found
+
+  /sessions/{id}/update:
+    put:
+      summary: Update a session
+      tags:
+        - Sessions
+      description: Endpoint to update session details.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "session123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSession'
+      responses:
+        '200':
+          description: Session updated successfully
+        '404':
+          description: Session not found
+
+  /sessions/{id}/end:
+    post:
+      summary: End a session
+      tags:
+        - Sessions
+      description: Endpoint to end a session by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "session123"
+      responses:
+        '200':
+          description: Session ended successfully
+        '404':
+          description: Session not found
+
+  /sessions/listAll:
+    get:
+      summary: List all sessions
+      tags:
+        - Sessions
+      description: Endpoint to list all sessions.
+      responses:
+        '200':
+          description: A list of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+        '404':
+          description: No sessions found
+
+  # Router Routes
+  /routers/create:
+    post:
+      summary: Create a router
+      tags:
+        - Routers
+      description: Endpoint to create a new router.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRouter'
+      responses:
+        '201':
+          description: Router created successfully
+        '400':
+          description: Bad request
+
+  /routers/list/{id}:
+    get:
+      summary: List router by vendor ID
+      tags:
+        - Routers
+      description: Endpoint to list routers for a given vendor by vendor ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "vendor123"
+      responses:
+        '200':
+          description: List of routers for the vendor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Router'
+        '404':
+          description: Vendor not found or no routers found for vendor
+
+  /routers/listAll:
+    get:
+      summary: List all routers
+      tags:
+        - Routers
+      description: Endpoint to list all routers.
+      responses:
+        '200':
+          description: A list of all routers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Router'
+        '404':
+          description: No routers found
+
+  /routers/delete/{id}:
+    delete:
+      summary: Delete a router
+      tags:
+        - Routers
+      description: Endpoint to delete a router by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "router123"
+      responses:
+        '200':
+          description: Router deleted successfully
+        '404':
+          description: Router not found
+
+  /routers/update/{id}:
+    put:
+      summary: Update a router
+      tags:
+        - Routers
+      description: Endpoint to update router details.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "router123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRouter'
+      responses:
+        '200':
+          description: Router updated successfully
+        '404':
+          description: Router not found
+
+  /routers/toggle/{id}:
+    patch:
+      summary: Activate or deactivate a router
+      tags:
+        - Routers
+      description: Endpoint to activate or deactivate a router by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "router123"
+      responses:
+        '200':
+          description: Router status updated successfully
+        '404':
+          description: Router not found
+
+  # Payment Routes
+  /payments/create:
+    post:
+      summary: Create a payment
+      tags:
+        - Payments
+      description: Endpoint to create a new payment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePayment'
+      responses:
+        '201':
+          description: Payment created successfully
+        '400':
+          description: Bad request
+
+  /payments/{id}/delete:
+    delete:
+      summary: Delete a payment
+      tags:
+        - Payments
+      description: Endpoint to delete a payment by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "payment123"
+      responses:
+        '200':
+          description: Payment deleted successfully
+        '404':
+          description: Payment not found
+
+  /payments/{id}/update:
+    put:
+      summary: Update a payment
+      tags:
+        - Payments
+      description: Endpoint to update payment details.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "payment123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePayment'
+      responses:
+        '200':
+          description: Payment updated successfully
+        '404':
+          description: Payment not found
+
+  /payments/listAll:
+    get:
+      summary: List all payments
+      tags:
+        - Payments
+      description: Endpoint to list all payments.
+      responses:
+        '200':
+          description: A list of all payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '404':
+          description: No payments found
+
+  /payments/summary/{id}:
+    get:
+      summary: Payment summary
+      tags:
+        - Payments
+      description: Endpoint to get a summary of a specific payment by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "payment123"
+      responses:
+        '200':
+          description: Payment summary retrieved successfully
+        '404':
+          description: Payment not found
+
+  /payments/filter:
+    get:
+      summary: Filter payments
+      tags:
+        - Payments
+      description: Endpoint to filter payments based on specific criteria.
+      responses:
+        '200':
+          description: Filtered payments retrieved successfully
+        '400':
+          description: Invalid filter criteria
+  paths:
+  # Vendor Subscription Routes
+  /vendorSubscriptions/listAll:
+    get:
+      summary: List all vendor subscriptions
+      tags:
+        - Vendor Subscriptions
+      description: Endpoint to list all vendor subscriptions.
+      responses:
+        '200':
+          description: A list of all vendor subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VendorSubscription'
+        '404':
+          description: No vendor subscriptions found
+
+  /vendorSubscriptions/{id}/delete:
+    delete:
+      summary: Delete a vendor subscription
+      tags:
+        - Vendor Subscriptions
+      description: Endpoint to delete a vendor subscription by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "sub123"
+      responses:
+        '200':
+          description: Vendor subscription deleted successfully
+        '404':
+          description: Vendor subscription not found
+
+  /vendorSubscriptions/create:
+    post:
+      summary: Create a new vendor subscription
+      tags:
+        - Vendor Subscriptions
+      description: Endpoint to create a new vendor subscription.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVendorSubscription'
+      responses:
+        '201':
+          description: Vendor subscription created successfully
+        '400':
+          description: Bad request
+
+  /vendorSubscriptions/filter:
+    get:
+      summary: Filter vendor subscriptions
+      tags:
+        - Vendor Subscriptions
+      description: Endpoint to filter vendor subscriptions based on specific criteria.
+      responses:
+        '200':
+          description: Filtered vendor subscriptions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VendorSubscription'
+        '400':
+          description: Invalid filter criteria
+
+  /vendorSubscriptions/{id}/update:
+    put:
+      summary: Update a vendor subscription
+      tags:
+        - Vendor Subscriptions
+      description: Endpoint to update a vendor subscription by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "sub123"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVendorSubscription'
+      responses:
+        '200':
+          description: Vendor subscription updated successfully
+        '404':
+          description: Vendor subscription not found
+        
+
+components:
+  schemas:
+  
+    CreateUser:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+          example: "johndoe"
+        password:
+          type: string
+          example: "password123"
+        email:
+          type: string
+          example: "johndoe@example.com"
+
+    LoginUser:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: "johndoe"
+        password:
+          type: string
+          example: "password123"
+
+    UpdateUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "newUsername"
+        email:
+          type: string
+          example: "newemail@example.com"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "12345"
+        username:
+          type: string
+          example: "johndoe"
+        email:
+          type: string
+          example: "johndoe@example.com"
+
+    CreateVendor:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          example: "Vendor Name"
+        location:
+          type: string
+          example: "Vendor Location"
+
+    Vendor:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "vendor123"
+        name:
+          type: string
+          example: "Vendor Name"
+        location:
+          type: string
+          example: "Vendor Location"
+
+    CreateSession:
+      type: object
+      required:
+        - sessionName
+        - userId
+      properties:
+        sessionName:
+          type: string
+          example: "Session Name"
+        userId:
+          type: string
+          example: "user123"
+
+    UpdateSession:
+      type: object
+      properties:
+        sessionName:
+          type: string
+          example: "Updated Session Name"
+        userId:
+          type: string
+          example: "user123"
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "session123"
+        sessionName:
+          type: string
+          example: "Session Name"
+        userId:
+          type: string
+          example: "user123"
+        status:
+          type: string
+          example: "active"
+
+    CreateRouter:
+      type: object
+      required:
+        - routerName
+        - vendorId
+      properties:
+        routerName:
+          type: string
+          example: "New Router"
+        vendorId:
+          type: string
+          example: "vendor123"
+
+    Router:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "router123"
+        routerName:
+          type: string
+          example: "My Router"
+        vendorId:
+          type: string
+          example: "vendor123"
+        status:
+          type: string
+          example: "active"
+    
+    UpdateRouter:
+     type: object
+     properties:
+      routerName:
+       type: string
+       example: "Updated Router Name"
+      vendorId:
+       type: string
+       example: "vendor123"
+      status:
+       type: string
+       example: "active"
+
+
+    CreatePayment:
+      type: object
+      required:
+        - amount
+        - method
+        - userId
+      properties:
+        amount:
+          type: number
+          example: 150.00
+        method:
+          type: string
+          example: "Credit Card"
+        userId:
+          type: string
+          example: "user123"
+
+    UpdatePayment:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 200.00
+        method:
+          type: string
+          example: "PayPal"
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "payment123"
+        amount:
+          type: number
+          example: 150.00
+        method:
+          type: string
+          example: "Credit Card"
+        userId:
+          type: string
+          example: "user123"
+        status:
+          type: string
+          example: "completed"
+          
+    VendorSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "sub123"
+        vendorId:
+          type: string
+          example: "vendor123"
+        subscriptionType:
+          type: string
+          example: "Premium"
+        status:
+          type: string
+          example: "active"
+        startDate:
+          type: string
+          format: date
+          example: "2023-01-01"
+        endDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+
+    CreateVendorSubscription:
+      type: object
+      required:
+        - vendorId
+        - subscriptionType
+      properties:
+        vendorId:
+          type: string
+          example: "vendor123"
+        subscriptionType:
+          type: string
+          example: "Premium"
+        startDate:
+          type: string
+          format: date
+          example: "2023-01-01"
+        endDate:
+          type: string
+          format: date
+          example: "2024-01-01"
+
+    UpdateVendorSubscription:
+      type: object
+      properties:
+        subscriptionType:
+          type: string
+          example: "Basic"
+        status:
+          type: string
+          example: "active"
+        endDate:
+          type: string
+          format: date
+          example: "2024-06-01"        
+          
