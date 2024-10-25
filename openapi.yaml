@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Eutron Technologies Limited
+  title: Eutron Solutions Limited 
   description: This API manages users, vendors, sessions, routers, and payments, providing endpoints for creation, retrieval, updates, and deletions.
   version: 1.0.0
 servers:
@@ -496,7 +496,7 @@ paths:
           description: Filtered payments retrieved successfully
         '400':
           description: Invalid filter criteria
-  paths:
+  
   # Vendor Subscription Routes
   /vendorSubscriptions/listAll:
     get:
